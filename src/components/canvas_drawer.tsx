@@ -8,6 +8,7 @@ import ImageItem from "./background_layer";
 import CanvasItem from "../models/canvas_item";
 import { useCopyToClipboard } from "usehooks-ts";
 import { getFitContainSize } from "../handler/utils";
+import RightSide from "./right_side";
 
 function CanvasDrawer() {
   const [itemSelectedIndex, setItemSelectedIndex] = useState(-1);
@@ -15,7 +16,7 @@ function CanvasDrawer() {
   const [backgroundItem, setBackgroundItem] = useState<CanvasItem | undefined>();
   const [items, setItems] = useState<CanvasItem[]>([]);
 
-  useCopyToClipboard()
+  
 
   const updateItemAtIndex = (index: number, newValue: CanvasItem) => {
     const updatedItems = items.map((item, i) =>
@@ -24,7 +25,7 @@ function CanvasDrawer() {
     setItems(updatedItems);
   }
 
-  console.log(items);
+  
   const [showToast, setShowToast] = useState(false);
   const handleClick = () => {
     setShowToast(true);
@@ -37,7 +38,17 @@ function CanvasDrawer() {
 
     setShowToast(false);
   };
+  // useEffect(()=>{
+  //   if(itemSelectedIndex>=0){
+  //     console.log("Update selected item");
+  //     console.log(items[itemSelectedIndex]);
+  //     setSelectedItem({
+  //       ...items[itemSelectedIndex],
+  //     })
+  //   }
+  // },[itemSelectedIndex]);
 
+  console.log("Selected item: "+JSON.stringify(items[itemSelectedIndex]));
 
   return (
     <div className="w-full h-full flex justify-start">
@@ -45,10 +56,8 @@ function CanvasDrawer() {
       <div className="flex flex-col flex-grow  items-center">
         <div className="flex flex-wrap justify-start items-center gap-x-1">
           <UploadFileButton title={'Set Background'} onImageSelected={(info) => {
-            console.log("Info get: " + JSON.stringify(info));
-
             const preferedSize = getFitContainSize(info.width ?? 0, info.height ?? 0, 800, 600);
-            console.log(preferedSize);
+           
             setBackgroundItem({
               width: preferedSize.width,
               height: preferedSize.height,
@@ -58,7 +67,7 @@ function CanvasDrawer() {
             });
           }} />
           <UploadFileButton title={'Add Item'} onImageSelected={(info) => {
-            console.log("Item data: " + JSON.stringify(info));
+            
             const newItem: CanvasItem = {
               url: info.blob_url ?? '',
               width: 30,
@@ -66,6 +75,7 @@ function CanvasDrawer() {
               x: 0,
               y: 0,
             }
+            console.log(newItem);
             setItems((prev) => [...prev, newItem]);
           }} />
           {/* <FormControlLabel
@@ -101,7 +111,8 @@ function CanvasDrawer() {
                 }}
                 draggable
                 onDragEnd={(newData) => {
-                  updateItemAtIndex(itemSelectedIndex, {
+                  console.log('Update item: '+item.url);
+                  updateItemAtIndex(index, {
                     ...item,
                     x: newData.x,
                     y: newData.y,
@@ -121,56 +132,27 @@ function CanvasDrawer() {
           </Stage>
         </div>
       </div>
-      {itemSelectedIndex >= 0 && <Snackbar open={showToast} autoHideDuration={6000} onClose={handleClose}>
+      {itemSelectedIndex >= 0 &&( <Snackbar open={showToast} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          {items[itemSelectedIndex].x} - {items[itemSelectedIndex].y}
+          {items[itemSelectedIndex].x??0/(backgroundItem?.width??1)} , {(items[itemSelectedIndex].y??0)/(backgroundItem?.height??1)}
         </Alert>
-      </Snackbar>}
+      </Snackbar>)}
       {/* Right side */}
       <div className=" w-[200px] h-auto  bg-white">
-        {itemSelectedIndex >= 0 &&
-          <div className="flex flex-col justify-start w-full h-full">
-            <span className="text-xl text-black font-semibold w-full border-gray-400 border-[1px]">Info Item</span>
-            <div className="flex flex-col justify-between p-2">
-              <h4 className="text-black text-lg">Item {itemSelectedIndex}</h4>
-              <RowData title="Width" value={items[itemSelectedIndex].width} onChange={(newValue) => {
-                // items[itemSelectedIndex].width = parseFloat(newValue);
-                updateItemAtIndex(itemSelectedIndex, {
-                  ...items[itemSelectedIndex],
-                  width: parseFloat(newValue),
-                })
-
-              }} />
-              <RowData title="Height" value={items[itemSelectedIndex].height} onChange={(newValue) => {
-                updateItemAtIndex(itemSelectedIndex, {
-                  ...items[itemSelectedIndex],
-                  height: parseFloat(newValue),
-                })
-              }} />
-              {/* <RowData title="X" value={items[itemSelectedIndex].x} onChange={(newValue) => {
-                items[itemSelectedIndex].x = parseFloat(newValue);
-                updateItemAtIndex(itemSelectedIndex, {
-                  ...items[itemSelectedIndex],
-                  x: parseFloat(newValue),
-                })
-              }} />
-              <RowData title="Y" value={items[itemSelectedIndex].y} onChange={(newValue) => {
-                updateItemAtIndex(itemSelectedIndex, {
-                  ...items[itemSelectedIndex],
-                  y: parseFloat(newValue),
-                })
-              }} />
-              <RowData title="R_X" value={(items[itemSelectedIndex].x ?? 0) / (backgroundItem?.width ?? 1)} disabled />
-              <RowData title="R_Y" value={(items[itemSelectedIndex].y ?? 0) / (backgroundItem?.height ?? 1)} disabled /> */}
-              <Button onClick={handleClick}>Get Relative Offset</Button>
-            </div>
-          </div>
+        {itemSelectedIndex>=0 &&
+        <RightSide
+         data={items[itemSelectedIndex]}
+         bgItem={backgroundItem}
+          index={itemSelectedIndex}
+           updateDataFn={(newData)=>{
+          updateItemAtIndex(itemSelectedIndex,newData);
+        }}/>
         }
         {
           itemSelectedIndex < 0 &&
-          <div className=" flex flex-wrap">
+        (  <div className=" flex flex-wrap">
             <span className="text-black"> Default setting</span>
-          </div>
+          </div>)
         }
 
       </div>
@@ -179,23 +161,6 @@ function CanvasDrawer() {
 }
 
 
-type RowDataProp = {
-  title: string,
-  value: any,
-  disabled?: boolean,
-  onChange?: (newValue: string) => void
-}
-function RowData(props: RowDataProp) {
-  return (
-    <div className="flex items-center space-x-3">
-      <span className="text-base text-black p">{props.title}:</span>
-      <TextField disabled={props.disabled} size={'small'} type="number" defaultValue={props.value} onChange={(e) => {
-        if (props.onChange) {
-          props.onChange(e.target.value);
-        }
-      }} />
-    </div>
-  )
-}
+
 
 export default CanvasDrawer;
