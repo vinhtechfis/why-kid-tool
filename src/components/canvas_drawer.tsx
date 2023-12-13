@@ -16,7 +16,7 @@ function CanvasDrawer() {
   const [backgroundItem, setBackgroundItem] = useState<CanvasItem | undefined>();
   const [items, setItems] = useState<CanvasItem[]>([]);
 
-  
+
 
   const updateItemAtIndex = (index: number, newValue: CanvasItem) => {
     const updatedItems = items.map((item, i) =>
@@ -25,7 +25,7 @@ function CanvasDrawer() {
     setItems(updatedItems);
   }
 
-  
+
   const [showToast, setShowToast] = useState(false);
   const handleClick = () => {
     setShowToast(true);
@@ -48,7 +48,7 @@ function CanvasDrawer() {
   //   }
   // },[itemSelectedIndex]);
 
-  console.log("Selected item: "+JSON.stringify(items[itemSelectedIndex]));
+  console.log("Selected item: " + JSON.stringify(items[itemSelectedIndex]));
 
   return (
     <div className="w-full h-full flex justify-start">
@@ -57,7 +57,7 @@ function CanvasDrawer() {
         <div className="flex flex-wrap justify-start items-center gap-x-1">
           <UploadFileButton title={'Set Background'} onImageSelected={(info) => {
             const preferedSize = getFitContainSize(info.width ?? 0, info.height ?? 0, 800, 600);
-           
+
             setBackgroundItem({
               width: preferedSize.width,
               height: preferedSize.height,
@@ -67,7 +67,7 @@ function CanvasDrawer() {
             });
           }} />
           <UploadFileButton title={'Add Item'} onImageSelected={(info) => {
-            
+
             const newItem: CanvasItem = {
               url: info.blob_url ?? '',
               width: 30,
@@ -111,7 +111,7 @@ function CanvasDrawer() {
                 }}
                 draggable
                 onDragEnd={(newData) => {
-                  console.log('Update item: '+item.url);
+                  console.log('Update item: ' + item.url);
                   updateItemAtIndex(index, {
                     ...item,
                     x: newData.x,
@@ -132,25 +132,25 @@ function CanvasDrawer() {
           </Stage>
         </div>
       </div>
-      {itemSelectedIndex >= 0 &&( <Snackbar open={showToast} autoHideDuration={6000} onClose={handleClose}>
+      {itemSelectedIndex >= 0 && (<Snackbar open={showToast} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          {items[itemSelectedIndex].x??0/(backgroundItem?.width??1)} , {(items[itemSelectedIndex].y??0)/(backgroundItem?.height??1)}
+          {items[itemSelectedIndex].x ?? 0 / (backgroundItem?.width ?? 1)} , {(items[itemSelectedIndex].y ?? 0) / (backgroundItem?.height ?? 1)}
         </Alert>
       </Snackbar>)}
       {/* Right side */}
       <div className=" w-[200px] h-auto  bg-white">
-        {itemSelectedIndex>=0 &&
-        <RightSide
-         data={items[itemSelectedIndex]}
-         bgItem={backgroundItem}
-          index={itemSelectedIndex}
-           updateDataFn={(newData)=>{
-          updateItemAtIndex(itemSelectedIndex,newData);
-        }}/>
+        {itemSelectedIndex >= 0 &&
+          <RightSide
+            data={items[itemSelectedIndex]}
+            bgItem={backgroundItem}
+            index={itemSelectedIndex}
+            updateDataFn={(newData) => {
+              updateItemAtIndex(itemSelectedIndex, newData);
+            }} />
         }
         {
           itemSelectedIndex < 0 &&
-        (  <div className=" flex flex-wrap">
+          (<div className=" flex flex-wrap">
             <span className="text-black"> Default setting</span>
           </div>)
         }
