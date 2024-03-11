@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/why-kid-tool/static/css/main.1d97b3de.css",
-    "main.js": "/why-kid-tool/static/js/main.6951b65e.js",
+    "main.css": "/why-kid-tool/static/css/main.8faad53b.css",
+    "main.js": "/why-kid-tool/static/js/main.6b76227d.js",
     "index.html": "/why-kid-tool/index.html",
-    "main.1d97b3de.css.map": "/why-kid-tool/static/css/main.1d97b3de.css.map",
-    "main.6951b65e.js.map": "/why-kid-tool/static/js/main.6951b65e.js.map"
+    "main.8faad53b.css.map": "/why-kid-tool/static/css/main.8faad53b.css.map",
+    "main.6b76227d.js.map": "/why-kid-tool/static/js/main.6b76227d.js.map"
   },
   "entrypoints": [
-    "static/css/main.1d97b3de.css",
-    "static/js/main.6951b65e.js"
+    "static/css/main.8faad53b.css",
+    "static/js/main.6b76227d.js"
   ]
 }
