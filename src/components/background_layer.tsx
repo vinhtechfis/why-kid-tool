@@ -10,10 +10,15 @@ type ImageItemProps = {
 } & ItemData
 
 function ImageItem(props: ImageItemProps) {
-    const { src, width, height, onDragEnd, onClick, x, y } = props;
+    const { src, width, height, onDragEnd, onClick, x, y, opacity, } = props;
     const [image] = useImage(src);
+    if ((opacity ?? 0) < 1.0) {
+        console.log(props);
+    }
+
     return (
         <Image
+
             x={x ?? 0}
             y={y ?? 0}
             draggable={props.draggable}
@@ -21,6 +26,7 @@ function ImageItem(props: ImageItemProps) {
             width={width ?? 100}
             image={image}
             onClick={onClick}
+            opacity={opacity}
             onDragEnd={(e) => {
                 const { attrs } = e.target;
                 const data: ItemData = {
@@ -28,6 +34,7 @@ function ImageItem(props: ImageItemProps) {
                     y: attrs.y,
                     width: attrs.width,
                     height: attrs.height,
+                    opacity: attrs.opacity,
                 }
                 if (onDragEnd) {
                     onDragEnd(data);

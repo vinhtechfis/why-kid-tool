@@ -19,9 +19,9 @@ function CanvasDrawer() {
 
 
   const updateItemAtIndex = (index: number, newValue: CanvasItem) => {
-    const updatedItems = items.map((item, i) =>
+    const updatedItems = [...items.map((item, i) =>
       i === index ? newValue : item
-    );
+    )];
     setItems(updatedItems);
   }
 
@@ -38,17 +38,7 @@ function CanvasDrawer() {
 
     setShowToast(false);
   };
-  // useEffect(()=>{
-  //   if(itemSelectedIndex>=0){
-  //     console.log("Update selected item");
-  //     console.log(items[itemSelectedIndex]);
-  //     setSelectedItem({
-  //       ...items[itemSelectedIndex],
-  //     })
-  //   }
-  // },[itemSelectedIndex]);
 
-  console.log("Selected item: " + JSON.stringify(items[itemSelectedIndex]));
 
   return (
     <div className="w-full h-full flex justify-start">
@@ -64,6 +54,7 @@ function CanvasDrawer() {
               url: info.blob_url ?? '',
               x: 0,
               y: 0,
+              opacity: 1.0,
             });
           }} />
           <UploadFileButton title={'Add Item'} onImageSelected={(info) => {
@@ -74,26 +65,14 @@ function CanvasDrawer() {
               height: 30,
               x: 0,
               y: 0,
+              opacity: 1.0,
             }
             console.log(newItem);
             setItems((prev) => [...prev, newItem]);
           }} />
-          {/* <FormControlLabel
-            label='Use custom size'
-            control={
-              <Checkbox
-                onChange={(e) => {
-                  console.log("data change" + e.target.value)
-                }}
-              />}
-            labelPlacement="end"
-          /> */}
-          {/* <div className="flex flex-col items-start gap-y-1">
-            <span className="text-base">Width: <TextField size={'small'} defaultValue={500} type="number" disabled={!isCustom} /></span>
-            <span className="text-base">Height: <TextField size={'small'} defaultValue={500} type="number" disabled={!isCustom} /></span>
-          </div> */}
-
         </div>
+
+        {/* MAIN - CANVAS DISPLAY */}
         <div className="bg-slate-200">
           <Stage className="bg-white" height={backgroundItem?.height ?? 600} width={backgroundItem?.width ?? 800} >
             <Layer>
@@ -105,6 +84,7 @@ function CanvasDrawer() {
               {items.map((item, index) => <ImageItem key={index}
                 src={item.url} x={item.x} y={item.y}
                 width={item.width} height={item.height}
+                opacity={item.opacity}
                 onClick={() => {
                   console.log('Click at ' + index)
                   setItemSelectedIndex(index);
@@ -118,6 +98,7 @@ function CanvasDrawer() {
                     y: newData.y,
                     width: newData.width,
                     height: newData.height,
+                    opacity: newData.opacity ?? 1.0
                   });
 
                   // console.log("New data: " + JSON.stringify(newData));
@@ -132,12 +113,13 @@ function CanvasDrawer() {
           </Stage>
         </div>
       </div>
+      {/* NOTIFICATION */}
       {itemSelectedIndex >= 0 && (<Snackbar open={showToast} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {items[itemSelectedIndex].x ?? 0 / (backgroundItem?.width ?? 1)} , {(items[itemSelectedIndex].y ?? 0) / (backgroundItem?.height ?? 1)}
         </Alert>
       </Snackbar>)}
-      {/* Right side */}
+      {/* Right side  - INFORMATION BAR*/}
       <div className=" w-[200px] h-auto  bg-white">
         {itemSelectedIndex >= 0 &&
           <RightSide
